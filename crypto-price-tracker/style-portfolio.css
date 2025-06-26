@@ -530,6 +530,25 @@ body {
     font-weight: bold;
 }
 
+/* Custom Coin Styling */
+.crypto-card.custom-coin {
+    border: 2px solid rgba(243, 156, 18, 0.5);
+    background: rgba(243, 156, 18, 0.05);
+}
+
+.custom-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: linear-gradient(45deg, #f39c12, #e67e22);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: bold;
+    z-index: 10;
+}
+
 /* Add to Portfolio Button */
 .add-to-portfolio-btn {
     width: 100%;

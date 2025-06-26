@@ -7,7 +7,10 @@ let currentModalCrypto = null;
 
 // API Configuration
 const API_URL = 'https://api.coingecko.com/api/v3/coins/markets';
-const API_PARAMS = '?vs_currency=usd&order=market_cap_desc&per_page=50&page=1&sparkline=false&price_change_percentage=24h';
+const TOP_COINS_PARAMS = '?vs_currency=usd&order=market_cap_desc&per_page=50&page=1&sparkline=false&price_change_percentage=24h';
+
+// Custom coins you want to always include (even if not in top 50)
+const CUSTOM_COINS = ['edu-coin', 'shiba-inu', 'pepe', 'dogecoin', 'chainlink', 'uniswap']; // Add any coin IDs you want here
 
 // DOM Elements
 const cryptoGrid = document.getElementById('cryptoGrid');
@@ -74,26 +77,48 @@ function setupEventListeners() {
     });
 }
 
-// Load cryptocurrency data from API
+// Load cryptocurrency data from API (now includes custom coins)
 async function loadCryptoData() {
     showLoading();
     hideError();
     
     try {
-        const response = await fetch(API_URL + API_PARAMS);
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+        // Fetch top 50 coins
+        const topCoinsResponse = await fetch(API_URL + TOP_COINS_PARAMS);
+        if (!topCoinsResponse.ok) {
+            throw new Error(`HTTP error! status: ${topCoinsResponse.status}`);
         }
+        const topCoinsData = await topCoinsResponse.json();
         
-        const data = await response.json();
-        cryptoData = data;
-        filteredData = data;
+        // Fetch custom coins (like EDU)
+        const customCoinsIds = CUSTOM_COINS.join(',');
+        const customCoinsParams = `?ids=${customCoinsIds}&vs_currency=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true&include_last_updated_at=true`;
+        
+        const customCoinsResponse = await fetch(API_URL + customCoinsParams);
+        if (!customCoinsResponse.ok) {
+            console.warn('Failed to fetch some custom coins, but continuing with top coins');
+        }
+        const customCoinsData = await customCoinsResponse.json();
+        
+        // Combine data, avoiding duplicates
+        const topCoinsIds = topCoinsData.map(coin => coin.id);
+        const uniqueCustomCoins = customCoinsData.filter(coin => !topCoinsIds.includes(coin.id));
+        
+        cryptoData = [...topCoinsData, ...uniqueCustomCoins];
+        filteredData = cryptoData;
         
         updateTimestamp();
         renderCryptoCards();
         updatePortfolioDisplay();
         hideLoading();
+        
+        console.log(`✅ Loaded ${cryptoData.length} coins (${topCoinsData.length} top coins + ${uniqueCustomCoins.length} custom coins)`);
+        
+        // Log which custom coins were loaded
+        const loadedCustomCoins = uniqueCustomCoins.map(coin => `${coin.name} (${coin.symbol.toUpperCase()})`);
+        if (loadedCustomCoins.length > 0) {
+            console.log(`📌 Custom coins loaded: ${loadedCustomCoins.join(', ')}`);
+        }
         
     } catch (error) {
         console.error('Error fetching crypto data:', error);
@@ -127,9 +152,11 @@ function createCryptoCard(crypto) {
     const changeClass = priceChange >= 0 ? 'positive' : 'negative';
     const changeSymbol = priceChange >= 0 ? '+' : '';
     const isInPortfolio = portfolio.hasOwnProperty(crypto.id);
+    const isCustomCoin = CUSTOM_COINS.includes(crypto.id);
     
     return `
-        <div class="crypto-card">
+        <div class="crypto-card ${isCustomCoin ? 'custom-coin' : ''}">
+            ${isCustomCoin ? '<div class="custom-badge">⭐ Featured</div>' : ''}
             <div class="crypto-header">
                 <img src="${crypto.image}" alt="${crypto.name}" class="crypto-icon" loading="lazy">
                 <div class="crypto-info">
@@ -160,7 +187,7 @@ function createCryptoCard(crypto) {
                 </div>
                 <div class="stat-row">
                     <span class="stat-label">Market Cap Rank:</span>
-                    <span class="stat-value">#${crypto.market_cap_rank}</span>
+                    <span class="stat-value">#${crypto.market_cap_rank || 'N/A'}</span>
                 </div>
                 ${crypto.high_24h ? `
                 <div class="stat-row">
