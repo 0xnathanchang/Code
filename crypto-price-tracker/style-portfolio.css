@@ -5,9 +5,9 @@
 }
 
 body {
-    font-family: 'Arial', sans-serif;
-    background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 50%, #2d1b69 100%);
-    color: white;
+    font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, sans-serif;
+    background: #f8fafc;
+    color: #1e293b;
     min-height: 100vh;
     line-height: 1.6;
 }
@@ -20,53 +20,49 @@ body {
 
 .header {
     text-align: center;
-    margin-bottom: 30px;
-    padding: 20px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 15px;
-    backdrop-filter: blur(10px);
+    margin-bottom: 40px;
+    padding: 40px 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e2e8f0;
 }
 
 .header h1 {
     font-size: 2.5rem;
     margin-bottom: 10px;
-    background: linear-gradient(45deg, #f39c12, #e74c3c, #9b59b6);
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: glow 2s ease-in-out infinite alternate;
-}
-
-@keyframes glow {
-    from { filter: brightness(1); }
-    to { filter: brightness(1.2); }
+    color: #0f172a;
+    font-weight: 700;
 }
 
 .subtitle {
     font-size: 1.1rem;
     opacity: 0.8;
     margin-bottom: 15px;
+    color: #64748b;
 }
 
 .last-updated {
     font-size: 0.9rem;
     opacity: 0.7;
+    color: #94a3b8;
 }
 
 /* Portfolio Section Styles */
 .portfolio-section {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 15px;
+    background: white;
+    border-radius: 12px;
     padding: 25px;
     margin-bottom: 30px;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e2e8f0;
 }
 
 .portfolio-section h2 {
     font-size: 1.8rem;
     margin-bottom: 20px;
-    color: #f39c12;
+    color: #0f172a;
+    font-weight: 600;
 }
 
 .portfolio-summary {
@@ -78,23 +74,31 @@ body {
 
 .portfolio-stat {
     text-align: center;
-    padding: 15px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    background: #f8fafc;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    transition: transform 0.2s ease;
+}
+
+.portfolio-stat:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 .portfolio-stat .stat-label {
     display: block;
     font-size: 0.9rem;
-    opacity: 0.7;
+    color: #64748b;
     margin-bottom: 5px;
+    font-weight: 500;
 }
 
 .portfolio-stat .stat-value {
     display: block;
     font-size: 1.3rem;
     font-weight: bold;
+    color: #0f172a;
 }
 
 .portfolio-grid {
@@ -105,15 +109,15 @@ body {
 }
 
 .portfolio-item {
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 10px;
+    background: #f8fafc;
+    border-radius: 8px;
     padding: 15px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid #e2e8f0;
     transition: all 0.3s ease;
 }
 
 .portfolio-item:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: #f1f5f9;
     transform: translateY(-2px);
 }
 
@@ -133,12 +137,15 @@ body {
 .portfolio-item-info h4 {
     font-size: 1rem;
     margin-bottom: 2px;
+    color: #0f172a;
+    font-weight: 600;
 }
 
 .portfolio-item-symbol {
     font-size: 0.8rem;
     opacity: 0.7;
     text-transform: uppercase;
+    color: #64748b;
 }
 
 .portfolio-item-stats {
@@ -154,18 +161,18 @@ body {
 }
 
 .clear-portfolio-btn {
-    background: rgba(231, 76, 60, 0.2);
-    color: #e74c3c;
-    border: 1px solid rgba(231, 76, 60, 0.3);
+    background: white;
+    color: #dc2626;
+    border: 1px solid #fecaca;
     padding: 10px 20px;
-    border-radius: 20px;
+    border-radius: 8px;
     cursor: pointer;
     font-size: 0.9rem;
     transition: all 0.3s ease;
 }
 
 .clear-portfolio-btn:hover {
-    background: rgba(231, 76, 60, 0.3);
+    background: #fef2f2;
     transform: translateY(-2px);
 }
 
@@ -176,21 +183,22 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.5);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 1000;
-    backdrop-filter: blur(5px);
+    backdrop-filter: blur(4px);
 }
 
 .modal-content {
-    background: linear-gradient(135deg, #1a1a3e 0%, #2d1b69 100%);
-    border-radius: 15px;
+    background: white;
+    border-radius: 12px;
     width: 90%;
     max-width: 500px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid #e2e8f0;
     overflow: hidden;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
 }
 
 .modal-header {
@@ -198,18 +206,20 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 20px 25px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid #e2e8f0;
+    background: #f8fafc;
 }
 
 .modal-header h3 {
     font-size: 1.3rem;
-    color: #f39c12;
+    color: #0f172a;
+    font-weight: 600;
 }
 
 .modal-close {
     background: none;
     border: none;
-    color: white;
+    color: #64748b;
     font-size: 1.5rem;
     cursor: pointer;
     padding: 5px;
@@ -218,7 +228,7 @@ body {
 }
 
 .modal-close:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: #e2e8f0;
 }
 
 .modal-body {
@@ -230,8 +240,9 @@ body {
     align-items: center;
     margin-bottom: 25px;
     padding: 15px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 10px;
+    background: #f8fafc;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
 }
 
 .modal-crypto-icon {
@@ -245,11 +256,13 @@ body {
     font-size: 1.1rem;
     font-weight: bold;
     margin-bottom: 5px;
+    color: #0f172a;
 }
 
 .modal-crypto-price {
     font-size: 1.2rem;
-    color: #3498db;
+    color: #3b82f6;
+    font-weight: 600;
 }
 
 .input-group {
@@ -261,43 +274,45 @@ body {
     display: block;
     margin-bottom: 8px;
     font-weight: bold;
+    color: #374151;
 }
 
 .input-group input {
     width: 100%;
     padding: 12px 50px 12px 15px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid #d1d5db;
     border-radius: 8px;
-    background: rgba(255, 255, 255, 0.05);
-    color: white;
+    background: white;
+    color: #1e293b;
     font-size: 16px;
 }
 
 .input-group input:focus {
     outline: none;
-    border-color: #3498db;
-    background: rgba(255, 255, 255, 0.1);
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 .amount-symbol {
     position: absolute;
     right: 15px;
     top: 35px;
-    color: #3498db;
+    color: #3b82f6;
     font-weight: bold;
 }
 
 .modal-calculation {
-    background: rgba(255, 255, 255, 0.05);
+    background: #f0f9ff;
     padding: 15px;
     border-radius: 8px;
     text-align: center;
     font-size: 1.1rem;
     margin-bottom: 20px;
+    border: 1px solid #bfdbfe;
 }
 
 .calculated-value {
-    color: #2ecc71;
+    color: #1d4ed8;
     font-weight: bold;
     font-size: 1.2rem;
 }
@@ -306,37 +321,40 @@ body {
     display: flex;
     gap: 15px;
     padding: 20px 25px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid #e2e8f0;
     justify-content: flex-end;
+    background: #f8fafc;
 }
 
 .cancel-btn, .add-btn {
     padding: 10px 20px;
     border: none;
-    border-radius: 20px;
+    border-radius: 8px;
     cursor: pointer;
     font-size: 16px;
     transition: all 0.3s ease;
+    font-weight: 500;
 }
 
 .cancel-btn {
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: white;
+    color: #64748b;
+    border: 1px solid #d1d5db;
 }
 
 .cancel-btn:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: #f9fafb;
 }
 
 .add-btn {
-    background: linear-gradient(45deg, #2ecc71, #27ae60);
+    background: #10b981;
     color: white;
 }
 
 .add-btn:hover {
+    background: #059669;
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(46, 204, 113, 0.4);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
 .controls {
@@ -351,51 +369,54 @@ body {
     flex: 1;
     max-width: 400px;
     padding: 12px 20px;
-    border: none;
-    border-radius: 25px;
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background: white;
+    color: #1e293b;
     font-size: 16px;
     backdrop-filter: blur(10px);
 }
 
 .search-box::placeholder {
-    color: rgba(255, 255, 255, 0.6);
+    color: #9ca3af;
 }
 
 .search-box:focus {
     outline: none;
-    background: rgba(255, 255, 255, 0.15);
-    transform: scale(1.02);
-    transition: all 0.3s ease;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 .refresh-btn {
     padding: 12px 25px;
-    background: linear-gradient(45deg, #3498db, #2980b9);
+    background: #3b82f6;
     color: white;
     border: none;
-    border-radius: 25px;
+    border-radius: 8px;
     cursor: pointer;
     font-size: 16px;
     transition: all 0.3s ease;
 }
 
 .refresh-btn:hover {
+    background: #2563eb;
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
 .loading {
     text-align: center;
     padding: 60px 20px;
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
 }
 
 .spinner {
     width: 50px;
     height: 50px;
-    border: 4px solid rgba(255, 255, 255, 0.1);
-    border-top: 4px solid #3498db;
+    border: 4px solid #e2e8f0;
+    border-top: 4px solid #3b82f6;
     border-radius: 50%;
     animation: spin 1s linear infinite;
     margin: 0 auto 20px;
@@ -409,18 +430,19 @@ body {
 .error {
     text-align: center;
     padding: 40px;
-    background: rgba(231, 76, 60, 0.1);
-    border-radius: 10px;
-    border: 1px solid rgba(231, 76, 60, 0.3);
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #fecaca;
+    color: #dc2626;
 }
 
 .retry-btn {
     margin-top: 15px;
     padding: 10px 20px;
-    background: #e74c3c;
+    background: #dc2626;
     color: white;
     border: none;
-    border-radius: 20px;
+    border-radius: 8px;
     cursor: pointer;
 }
 
@@ -436,11 +458,10 @@ body {
 }
 
 .crypto-card {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 15px;
+    background: white;
+    border-radius: 12px;
     padding: 20px;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid #e2e8f0;
     transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
@@ -448,8 +469,26 @@ body {
 
 .crypto-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    border-color: #cbd5e1;
+}
+
+.crypto-card.custom-coin {
+    border: 2px solid rgba(243, 156, 18, 0.5);
+    background: rgba(243, 156, 18, 0.05);
+}
+
+.custom-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: linear-gradient(45deg, #f39c12, #e67e22);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: bold;
+    z-index: 10;
 }
 
 .crypto-header {
@@ -469,18 +508,22 @@ body {
 .crypto-info h3 {
     font-size: 1.2rem;
     margin-bottom: 5px;
+    color: #0f172a;
+    font-weight: 600;
 }
 
 .crypto-symbol {
     font-size: 0.9rem;
     opacity: 0.7;
     text-transform: uppercase;
+    color: #64748b;
 }
 
 .crypto-price {
     font-size: 1.8rem;
     font-weight: bold;
     margin-bottom: 10px;
+    color: #0f172a;
 }
 
 .crypto-change {
@@ -498,19 +541,19 @@ body {
 }
 
 .positive {
-    background: rgba(39, 174, 96, 0.2);
-    color: #2ecc71;
-    border: 1px solid rgba(39, 174, 96, 0.3);
+    background: rgba(34, 197, 94, 0.2);
+    color: #166534;
+    border: 1px solid rgba(34, 197, 94, 0.3);
 }
 
 .negative {
-    background: rgba(231, 76, 60, 0.2);
-    color: #e74c3c;
-    border: 1px solid rgba(231, 76, 60, 0.3);
+    background: rgba(239, 68, 68, 0.2);
+    color: #dc2626;
+    border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
 .crypto-stats {
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid #e2e8f0;
     padding-top: 15px;
     margin-bottom: 15px;
 }
@@ -524,39 +567,22 @@ body {
 
 .stat-label {
     opacity: 0.7;
+    color: #64748b;
 }
 
 .stat-value {
     font-weight: bold;
-}
-
-/* Custom Coin Styling */
-.crypto-card.custom-coin {
-    border: 2px solid rgba(243, 156, 18, 0.5);
-    background: rgba(243, 156, 18, 0.05);
-}
-
-.custom-badge {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: linear-gradient(45deg, #f39c12, #e67e22);
-    color: white;
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-size: 11px;
-    font-weight: bold;
-    z-index: 10;
+    color: #0f172a;
 }
 
 /* Add to Portfolio Button */
 .add-to-portfolio-btn {
     width: 100%;
     padding: 10px;
-    background: linear-gradient(45deg, #f39c12, #e67e22);
+    background: #3b82f6;
     color: white;
     border: none;
-    border-radius: 20px;
+    border-radius: 8px;
     cursor: pointer;
     font-size: 14px;
     font-weight: bold;
@@ -564,28 +590,34 @@ body {
 }
 
 .add-to-portfolio-btn:hover {
+    background: #2563eb;
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(243, 156, 18, 0.4);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
 .add-to-portfolio-btn.in-portfolio {
-    background: linear-gradient(45deg, #2ecc71, #27ae60);
+    background: #10b981;
 }
 
 .add-to-portfolio-btn.in-portfolio:hover {
-    box-shadow: 0 5px 15px rgba(46, 204, 113, 0.4);
+    background: #059669;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
 .footer {
     text-align: center;
     padding: 20px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid #e2e8f0;
     opacity: 0.7;
     font-size: 0.9rem;
+    color: #64748b;
+    background: white;
+    border-radius: 12px;
+    margin-top: 40px;
 }
 
 .footer a {
-    color: #3498db;
+    color: #3b82f6;
     text-decoration: none;
 }
 
