@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto Price Tracker</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🚀 Crypto Price Tracker</h1>
+            <p class="subtitle">Real-time cryptocurrency prices</p>
+            <div class="last-updated">
+                Last updated: <span id="lastUpdated">Loading...</span>
+            </div>
+        </header>
+
+        <div class="controls">
+            <input type="text" id="searchInput" placeholder="Search cryptocurrencies..." class="search-box">
+            <button id="refreshBtn" class="refresh-btn">🔄 Refresh</button>
+        </div>
+
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Loading cryptocurrency data...</p>
+        </div>
+
+        <div id="error" class="error hidden">
+            <p>❌ Failed to load data. Please try again.</p>
+            <button onclick="loadCryptoData()" class="retry-btn">Retry</button>
+        </div>
+
+        <div class="crypto-grid" id="cryptoGrid">
+            <!-- Crypto cards will be dynamically inserted here -->
+        </div>
+
+        <footer class="footer">
+            <p>Data provided by <a href="https://coingecko.com" target="_blank">CoinGecko</a></p>
+            <p>Updates every 30 seconds • Last refresh: <span id="footerTime">--</span></p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
