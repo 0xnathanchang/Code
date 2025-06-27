@@ -1,12 +1,9 @@
-# Test Project
-
-Doing a demo for how to use VS Code locally & push code to github
-
-## What this project does:
-- Displays a simple hello world message
-- Helps learn Git and GitHub
+# Test Projects
+A bunch of random experiments & interesting projects to test vibe coding, cursor, windsurf, claude, gemimi, openai, etc. you get the idea
 
 ## Technologies used:
-- HTML
+- HTML, CSS
 - JavaScript
+- Rust
+- Solidity
 - VS Code
