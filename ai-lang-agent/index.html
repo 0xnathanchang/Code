@@ -39,6 +39,9 @@
             
             <div class="start-section">
                 <button class="btn-primary" onclick="startLearning()">Start Learning</button>
+                <button class="btn-secondary review-btn" onclick="startReview()" id="reviewBtn">
+                    📚 Review (<span id="reviewCount">0</span>)
+                </button>
                 <button class="btn-secondary api-settings-btn" onclick="showApiSettings()">⚙️ AI Settings</button>
             </div>
         </div>
@@ -102,6 +105,78 @@
                 <button class="btn-primary" onclick="testWord()">✅ I Know This</button>
                 <button class="btn-secondary" onclick="nextWord()">➡️ Next Word</button>
                 <button class="btn-quiz" onclick="startQuiz()">🎯 Take Quiz</button>
+            </div>
+        </div>
+        
+        <!-- Review Section -->
+        <div id="review" style="display:none;">
+            <div class="review-header">
+                <h2>📚 Review Session</h2>
+                <div class="review-progress">
+                    <span id="reviewProgress">0 / 0</span>
+                    <div class="progress">
+                        <div class="progress-bar" id="reviewProgressBar" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="word-card active" id="reviewWordCard">
+                <div class="word-title" id="reviewWordTitle">Loading...</div>
+                <div class="pronunciation" id="reviewPronunciation"></div>
+                <div class="definition" id="reviewDefinition"></div>
+                
+                <div id="reviewImageContent" class="generated-image" style="display:none;">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <span>Loading...</span>
+                    </div>
+                </div>
+                
+                <div id="reviewTextContent" style="display:none;">
+                    <div class="example">
+                        <strong>Example:</strong> <span id="reviewExampleText"></span>
+                    </div>
+                    <div><strong>Synonyms:</strong> <span id="reviewSynonymsText"></span></div>
+                    <div><strong>Etymology:</strong> <span id="reviewEtymologyText"></span></div>
+                </div>
+                
+                <div id="reviewSoundContent" style="display:none;">
+                    <button class="btn-secondary" onclick="playReviewPronunciation()">🔊 Play Pronunciation</button>
+                    <div style="margin-top: 10px;">
+                        <strong>Phonetic Breakdown:</strong> <span id="reviewPhoneticBreakdown"></span>
+                    </div>
+                </div>
+                
+                <div id="reviewScenarioContent" class="scenario" style="display:none;">
+                    <strong>Scenario:</strong><br><span id="reviewScenarioText"></span>
+                </div>
+            </div>
+            
+            <div class="srs-controls">
+                <div class="review-navigation">
+                    <button class="btn-secondary" onclick="previousReviewWord()" id="prevReviewBtn">← Previous</button>
+                    <button class="btn-secondary" onclick="exitReview()">← Back to Setup</button>
+                </div>
+                
+                <p class="srs-question">How well did you remember this word?</p>
+                <div class="srs-buttons">
+                    <button class="btn-srs btn-again" onclick="rateDifficulty('again')">
+                        <span>Again</span>
+                        <small>&lt; 1 day</small>
+                    </button>
+                    <button class="btn-srs btn-hard" onclick="rateDifficulty('hard')">
+                        <span>Hard</span>
+                        <small>2-3 days</small>
+                    </button>
+                    <button class="btn-srs btn-good" onclick="rateDifficulty('good')">
+                        <span>Good</span>
+                        <small>1 week</small>
+                    </button>
+                    <button class="btn-srs btn-easy" onclick="rateDifficulty('easy')">
+                        <span>Easy</span>
+                        <small>2+ weeks</small>
+                    </button>
+                </div>
             </div>
         </div>
         

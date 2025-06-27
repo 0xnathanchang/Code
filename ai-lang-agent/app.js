@@ -17,11 +17,33 @@ let streak = 0;
 let apiKeys = {};
 let completedWords = new Set();
 let quizMode = false;
+let reviewMode = false;
 let currentQuiz = null;
 let quizStats = {
     multipleChoice: { correct: 0, total: 0 },
     wordMatching: { correct: 0, total: 0 },
     synonym: { correct: 0, total: 0 }
+};
+
+// SRS (Spaced Repetition System) Data
+let srsData = {};
+let reviewQueue = [];
+let currentReviewIndex = 0;
+
+// SRS Configuration
+const SRS_INTERVALS = {
+    NEW: 0,           // New word
+    LEARNING: 1,      // 1 day
+    YOUNG: 3,         // 3 days  
+    MATURE: 7,        // 7 days
+    MASTERED: 14      // 14 days, then 30, 60, etc.
+};
+
+const SRS_MULTIPLIERS = {
+    EASY: 2.5,        // Easy - multiply interval
+    GOOD: 2.0,        // Good - normal progression
+    HARD: 1.2,        // Hard - smaller increase
+    AGAIN: 0.0        // Again - reset to learning
 };
 
 // Free Visual Representations (Emoji-based)
@@ -192,7 +214,311 @@ function generateMatchingQuiz() {
     };
 }
 
+// Review Mode Functions
+let reviewedWords = []; // Track reviewed words for previous functionality
+
+function startReview() {
+    if (reviewQueue.length === 0) {
+        alert('No words to review right now! Come back later or learn some new words first.');
+        return;
+    }
+    
+    reviewMode = true;
+    currentReviewIndex = 0;
+    reviewedWords = []; // Reset reviewed words
+    
+    document.getElementById('setup').style.display = 'none';
+    document.getElementById('review').style.display = 'block';
+    
+    loadReviewWord();
+    showReviewContent();
+    updateReviewNavigation();
+}
+
+function loadReviewWord() {
+    if (currentReviewIndex >= reviewQueue.length) {
+        completeReviewSession();
+        return;
+    }
+    
+    const wordIndex = reviewQueue[currentReviewIndex];
+    const word = vocabulary[wordIndex];
+    
+    document.getElementById('reviewWordTitle').textContent = word.word;
+    document.getElementById('reviewPronunciation').textContent = word.pronunciation;
+    document.getElementById('reviewDefinition').textContent = word.definition;
+    
+    // Update review content
+    const freeVisual = getFreeVisualRepresentation(word.word);
+    document.getElementById('reviewImageContent').innerHTML = `<div style="font-size: 1.2em; text-align: center; padding: 20px; color: #007AFF; line-height: 1.6;">${freeVisual}</div>`;
+    
+    document.getElementById('reviewExampleText').textContent = `"${word.example}"`;
+    document.getElementById('reviewSynonymsText').textContent = word.synonyms;
+    document.getElementById('reviewEtymologyText').textContent = word.etymology;
+    document.getElementById('reviewPhoneticBreakdown').textContent = word.pronunciation.replace(/[\/]/g, '');
+    document.getElementById('reviewScenarioText').textContent = word.scenario;
+    
+    // Update progress
+    document.getElementById('reviewProgress').textContent = `${currentReviewIndex + 1} / ${reviewQueue.length}`;
+    const progress = ((currentReviewIndex + 1) / reviewQueue.length) * 100;
+    document.getElementById('reviewProgressBar').style.width = progress + '%';
+    
+    updateReviewNavigation();
+}
+
+function updateReviewNavigation() {
+    const prevBtn = document.getElementById('prevReviewBtn');
+    if (prevBtn) {
+        prevBtn.disabled = currentReviewIndex === 0;
+        prevBtn.style.opacity = currentReviewIndex === 0 ? '0.5' : '1';
+    }
+}
+
+function previousReviewWord() {
+    if (currentReviewIndex > 0) {
+        currentReviewIndex--;
+        
+        // Remove the last reviewed word rating if going back
+        if (reviewedWords.length > 0) {
+            const lastReviewed = reviewedWords.pop();
+            // Optionally revert the SRS update (complex, for now just navigate back)
+        }
+        
+        loadReviewWord();
+        showReviewContent();
+    }
+}
+
+function showReviewContent() {
+    // Hide all content first
+    document.getElementById('reviewImageContent').style.display = 'none';
+    document.getElementById('reviewTextContent').style.display = 'none';
+    document.getElementById('reviewSoundContent').style.display = 'none';
+    document.getElementById('reviewScenarioContent').style.display = 'none';
+    
+    // Show content based on selected mode
+    switch(selectedMode) {
+        case 'image':
+            document.getElementById('reviewImageContent').style.display = 'block';
+            break;
+        case 'text':
+            document.getElementById('reviewTextContent').style.display = 'block';
+            break;
+        case 'sound':
+            document.getElementById('reviewSoundContent').style.display = 'block';
+            break;
+        case 'scenario':
+            document.getElementById('reviewScenarioContent').style.display = 'block';
+            break;
+    }
+}
+
+function rateDifficulty(difficulty) {
+    const wordIndex = reviewQueue[currentReviewIndex];
+    
+    // Store the review for potential undo
+    reviewedWords.push({
+        wordIndex: wordIndex,
+        difficulty: difficulty,
+        reviewIndex: currentReviewIndex
+    });
+    
+    updateWordDifficulty(wordIndex, difficulty);
+    
+    // Move to next word
+    currentReviewIndex++;
+    loadReviewWord();
+    showReviewContent();
+}
+
+function completeReviewSession() {
+    const reviewedCount = reviewQueue.length;
+    document.getElementById('review').style.display = 'none';
+    document.getElementById('setup').style.display = 'block';
+    
+    // Update review button
+    updateReviewQueue();
+    
+    alert(`🎉 Review session complete! You reviewed ${reviewedCount} words. Great job!`);
+}
+
+function exitReview() {
+    reviewMode = false;
+    document.getElementById('review').style.display = 'none';
+    document.getElementById('setup').style.display = 'block';
+}
+
+function playReviewPronunciation() {
+    const wordIndex = reviewQueue[currentReviewIndex];
+    const word = vocabulary[wordIndex].word;
+    
+    if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(word);
+        utterance.rate = 0.8;
+        utterance.pitch = 1;
+        utterance.volume = 0.8;
+        
+        const voices = speechSynthesis.getVoices();
+        const englishVoice = voices.find(voice => 
+            voice.lang.startsWith('en') && voice.name.includes('Google')
+        ) || voices.find(voice => voice.lang.startsWith('en'));
+        
+        if (englishVoice) {
+            utterance.voice = englishVoice;
+        }
+        
+        speechSynthesis.speak(utterance);
+    } else {
+        alert('🔊 Playing pronunciation: ' + vocabulary[wordIndex].pronunciation);
+    }
+}
+
 // API Settings Modal Functions
+function initializeSRS() {
+    // Initialize SRS data for all vocabulary words
+    vocabulary.forEach((word, index) => {
+        if (!srsData[index]) {
+            srsData[index] = {
+                wordIndex: index,
+                interval: SRS_INTERVALS.NEW,
+                repetitions: 0,
+                easeFactor: 2.5,
+                nextReview: new Date(),
+                lastReview: null,
+                difficulty: 'new',
+                totalReviews: 0,
+                correctReviews: 0
+            };
+        }
+    });
+    
+    updateReviewQueue();
+    loadSRSData();
+}
+
+function updateWordDifficulty(wordIndex, performance) {
+    const card = srsData[wordIndex];
+    const now = new Date();
+    
+    card.lastReview = now;
+    card.totalReviews++;
+    
+    if (performance === 'easy' || performance === 'good') {
+        card.correctReviews++;
+    }
+    
+    // Calculate new interval based on performance
+    let newInterval = card.interval;
+    
+    switch(performance) {
+        case 'again':
+            card.repetitions = 0;
+            card.easeFactor = Math.max(1.3, card.easeFactor - 0.2);
+            newInterval = SRS_INTERVALS.LEARNING;
+            card.difficulty = 'learning';
+            break;
+            
+        case 'hard':
+            card.repetitions++;
+            card.easeFactor = Math.max(1.3, card.easeFactor - 0.15);
+            newInterval = Math.max(1, Math.ceil(card.interval * SRS_MULTIPLIERS.HARD));
+            card.difficulty = 'hard';
+            break;
+            
+        case 'good':
+            card.repetitions++;
+            if (card.repetitions === 1) {
+                newInterval = SRS_INTERVALS.LEARNING;
+            } else if (card.repetitions === 2) {
+                newInterval = SRS_INTERVALS.YOUNG;
+            } else {
+                newInterval = Math.ceil(card.interval * card.easeFactor);
+            }
+            card.difficulty = 'good';
+            break;
+            
+        case 'easy':
+            card.repetitions++;
+            card.easeFactor = Math.min(3.0, card.easeFactor + 0.15);
+            if (card.repetitions === 1) {
+                newInterval = SRS_INTERVALS.YOUNG;
+            } else {
+                newInterval = Math.ceil(card.interval * card.easeFactor * SRS_MULTIPLIERS.EASY);
+            }
+            card.difficulty = 'easy';
+            break;
+    }
+    
+    card.interval = newInterval;
+    card.nextReview = new Date(now.getTime() + (newInterval * 24 * 60 * 60 * 1000));
+    
+    saveSRSData();
+    updateReviewQueue();
+}
+
+function updateReviewQueue() {
+    const now = new Date();
+    reviewQueue = [];
+    
+    Object.values(srsData).forEach(card => {
+        if (card.nextReview <= now) {
+            reviewQueue.push(card.wordIndex);
+        }
+    });
+    
+    // Sort by priority (overdue first, then by difficulty)
+    reviewQueue.sort((a, b) => {
+        const cardA = srsData[a];
+        const cardB = srsData[b];
+        
+        // Overdue cards first
+        const overdueA = Math.floor((now - cardA.nextReview) / (24 * 60 * 60 * 1000));
+        const overdueB = Math.floor((now - cardB.nextReview) / (24 * 60 * 60 * 1000));
+        
+        if (overdueA !== overdueB) {
+            return overdueB - overdueA; // More overdue first
+        }
+        
+        // Then by difficulty (harder first)
+        const difficultyOrder = { 'again': 0, 'hard': 1, 'learning': 2, 'good': 3, 'easy': 4, 'new': 5 };
+        return difficultyOrder[cardA.difficulty] - difficultyOrder[cardB.difficulty];
+    });
+    
+    updateReviewStats();
+}
+
+function updateReviewStats() {
+    const reviewCount = reviewQueue.length;
+    const newCount = Object.values(srsData).filter(card => card.difficulty === 'new').length;
+    const learningCount = Object.values(srsData).filter(card => card.difficulty === 'learning').length;
+    
+    // Update UI elements if they exist
+    const reviewCountElement = document.getElementById('reviewCount');
+    const newCountElement = document.getElementById('newCount');
+    const learningCountElement = document.getElementById('learningCount');
+    
+    if (reviewCountElement) reviewCountElement.textContent = reviewCount;
+    if (newCountElement) newCountElement.textContent = newCount;
+    if (learningCountElement) learningCountElement.textContent = learningCount;
+}
+
+function saveSRSData() {
+    localStorage.setItem('vocabgenius_srs', JSON.stringify(srsData));
+}
+
+function loadSRSData() {
+    const saved = localStorage.getItem('vocabgenius_srs');
+    if (saved) {
+        srsData = JSON.parse(saved);
+        // Convert date strings back to Date objects
+        Object.values(srsData).forEach(card => {
+            card.nextReview = new Date(card.nextReview);
+            if (card.lastReview) {
+                card.lastReview = new Date(card.lastReview);
+            }
+        });
+    }
+}
 function showApiSettings() {
     document.getElementById('apiModal').style.display = 'flex';
 }
@@ -559,7 +885,7 @@ function showContentForMode() {
     }
 }
 
-// Test Word Function
+// Test Word Function - Updated for SRS
 function testWord() {
     // Mark word as completed
     completedWords.add(currentWord);
@@ -567,6 +893,9 @@ function testWord() {
     totalAttempts++;
     streak++;
     wordsLearned++;
+    
+    // Update SRS data - assume "good" performance for "I Know This"
+    updateWordDifficulty(currentWord, 'good');
     
     updateStats();
     
@@ -728,9 +1057,12 @@ function updateStats() {
     document.getElementById('streak').textContent = streak;
 }
 
-// Initialize voices when page loads
+// Initialize voices and SRS when page loads
 window.addEventListener('load', () => {
     if ('speechSynthesis' in window) {
         speechSynthesis.getVoices();
     }
+    
+    // Initialize SRS system
+    initializeSRS();
 });
