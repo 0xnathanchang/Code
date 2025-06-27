@@ -42,6 +42,8 @@
                 <button class="btn-secondary review-btn" onclick="startReview()" id="reviewBtn">
                     📚 Review (<span id="reviewCount">0</span>)
                 </button>
+                <button class="btn-secondary analytics-btn" onclick="showAnalytics()">📊 Analytics</button>
+                <button class="btn-secondary" onclick="showStudyRecommendations()">💡 Study Tips</button>
                 <button class="btn-secondary api-settings-btn" onclick="showApiSettings()">⚙️ AI Settings</button>
             </div>
         </div>
@@ -61,10 +63,42 @@
                     <div class="stat-number" id="streak">0</div>
                     <div>Streak</div>
                 </div>
+                <div class="stat analytics-stat" onclick="showAnalytics()" style="cursor: pointer; border: 2px solid #007AFF;">
+                    <div class="stat-number" style="color: #007AFF;">📊</div>
+                    <div style="color: #007AFF;">Analytics</div>
+                </div>
             </div>
             
             <div class="progress">
                 <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+            </div>
+            
+            <!-- Difficulty Progress Indicator -->
+            <div class="difficulty-progress" style="margin: 16px 0; padding: 16px; background: #F2F2F7; border-radius: 16px;">
+                <div style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: #1D1D1F;">Progress by Difficulty</div>
+                <div style="display: flex; gap: 12px;">
+                    <div style="flex: 1; text-align: center;">
+                        <div style="font-size: 12px; color: #30D158; font-weight: 500;">Beginner</div>
+                        <div style="height: 4px; background: #E5E5EA; border-radius: 2px; margin: 4px 0;">
+                            <div id="beginnerProgress" style="height: 100%; background: #30D158; border-radius: 2px; width: 0%; transition: width 0.8s ease;"></div>
+                        </div>
+                        <div style="font-size: 11px; color: #86868B;" id="beginnerText">0/50</div>
+                    </div>
+                    <div style="flex: 1; text-align: center;">
+                        <div style="font-size: 12px; color: #FF9F0A; font-weight: 500;">Intermediate</div>
+                        <div style="height: 4px; background: #E5E5EA; border-radius: 2px; margin: 4px 0;">
+                            <div id="intermediateProgress" style="height: 100%; background: #FF9F0A; border-radius: 2px; width: 0%; transition: width 0.8s ease;"></div>
+                        </div>
+                        <div style="font-size: 11px; color: #86868B;" id="intermediateText">0/50</div>
+                    </div>
+                    <div style="flex: 1; text-align: center;">
+                        <div style="font-size: 12px; color: #FF3B30; font-weight: 500;">Advanced</div>
+                        <div style="height: 4px; background: #E5E5EA; border-radius: 2px; margin: 4px 0;">
+                            <div id="advancedProgress" style="height: 100%; background: #FF3B30; border-radius: 2px; width: 0%; transition: width 0.8s ease;"></div>
+                        </div>
+                        <div style="font-size: 11px; color: #86868B;" id="advancedText">0/50</div>
+                    </div>
+                </div>
             </div>
             
             <div class="word-card active" id="wordCard">
@@ -153,6 +187,11 @@
             </div>
             
             <div class="srs-controls">
+                <div class="review-navigation">
+                    <button class="btn-secondary" onclick="previousReviewWord()" id="prevReviewBtn">← Previous</button>
+                    <button class="btn-secondary" onclick="exitReview()">← Back to Setup</button>
+                </div>
+                
                 <p class="srs-question">How well did you remember this word?</p>
                 <div class="srs-buttons">
                     <button class="btn-srs btn-again" onclick="rateDifficulty('again')">
@@ -172,7 +211,6 @@
                         <small>2+ weeks</small>
                     </button>
                 </div>
-                <button class="btn-secondary review-back" onclick="exitReview()">← Back to Setup</button>
             </div>
         </div>
         
@@ -202,7 +240,7 @@
             <div style="text-align: center; padding: 40px;">
                 <div style="font-size: 4em; margin-bottom: 20px;">🎉</div>
                 <h2 style="color: #667eea; margin-bottom: 20px;">Congratulations!</h2>
-                <h3>You've completed all 50 GMAT vocabulary words!</h3>
+                <h3>You've completed all 150 GMAT vocabulary words!</h3>
                 
                 <div class="stats" style="margin: 30px 0;">
                     <div class="stat">
@@ -227,6 +265,7 @@
                 <div class="controls">
                     <button class="btn-primary" onclick="restartLearning()">🔄 Start Over</button>
                     <button class="btn-secondary" onclick="reviewMissed()">📚 Review Difficult Words</button>
+                    <button class="btn-secondary" onclick="exportAnalyticsData()">📊 Export Progress</button>
                 </div>
             </div>
         </div>
@@ -267,6 +306,407 @@
 
     <!-- Load JavaScript files -->
     <script src="vocabulary-data.js"></script>
+    
+    <!-- Analytics Integration (Must load before app.js) -->
+    <script>
+        // VocabGenius Analytics Integration System (Inline for demo)
+        class VocabGeniusAnalytics {
+            constructor() {
+                this.analyticsData = {
+                    sessions: [],
+                    dailyProgress: {},
+                    wordAttempts: {},
+                    categoryStats: {},
+                    difficultyStats: {},
+                    streakData: {},
+                    timeTracking: {},
+                    srsAnalytics: {}
+                };
+                
+                this.initializeAnalytics();
+                this.loadAnalyticsData();
+            }
+
+            initializeAnalytics() {
+                this.startTime = Date.now();
+                this.currentSession = {
+                    startTime: this.startTime,
+                    wordsStudied: new Set(),
+                    quizzesTaken: 0,
+                    correctAnswers: 0,
+                    totalAttempts: 0,
+                    timeSpent: 0
+                };
+            }
+
+            trackWordStudied(wordIndex, difficulty, category, isCorrect = null) {
+                const word = vocabulary[wordIndex];
+                const today = this.getTodayKey();
+                
+                this.currentSession.wordsStudied.add(wordIndex);
+                if (isCorrect !== null) {
+                    this.currentSession.totalAttempts++;
+                    if (isCorrect) this.currentSession.correctAnswers++;
+                }
+
+                if (!this.analyticsData.wordAttempts[wordIndex]) {
+                    this.analyticsData.wordAttempts[wordIndex] = {
+                        word: word.word,
+                        difficulty: difficulty,
+                        category: category,
+                        attempts: 0,
+                        correct: 0,
+                        firstSeen: today,
+                        lastSeen: today,
+                        averageTime: 0,
+                        srsStage: 'new'
+                    };
+                }
+
+                const wordData = this.analyticsData.wordAttempts[wordIndex];
+                wordData.attempts++;
+                wordData.lastSeen = today;
+                if (isCorrect) wordData.correct++;
+
+                if (!this.analyticsData.dailyProgress[today]) {
+                    this.analyticsData.dailyProgress[today] = {
+                        wordsStudied: new Set(),
+                        quizzesTaken: 0,
+                        totalAttempts: 0,
+                        correctAnswers: 0,
+                        timeSpent: 0,
+                        newWords: new Set(),
+                        reviewedWords: new Set()
+                    };
+                }
+
+                this.analyticsData.dailyProgress[today].wordsStudied.add(wordIndex);
+                if (isCorrect !== null) {
+                    this.analyticsData.dailyProgress[today].totalAttempts++;
+                    if (isCorrect) this.analyticsData.dailyProgress[today].correctAnswers++;
+                }
+
+                this.updateCategoryStats(category, isCorrect);
+                this.updateDifficultyStats(difficulty, isCorrect);
+                this.saveAnalyticsData();
+            }
+
+            trackQuizCompleted(quizType, isCorrect, timeSpent) {
+                const today = this.getTodayKey();
+                
+                this.currentSession.quizzesTaken++;
+                this.currentSession.totalAttempts++;
+                if (isCorrect) this.currentSession.correctAnswers++;
+
+                if (!this.analyticsData.dailyProgress[today]) {
+                    this.analyticsData.dailyProgress[today] = this.getEmptyDayData();
+                }
+
+                this.analyticsData.dailyProgress[today].quizzesTaken++;
+                this.analyticsData.dailyProgress[today].totalAttempts++;
+                if (isCorrect) this.analyticsData.dailyProgress[today].correctAnswers++;
+                this.analyticsData.dailyProgress[today].timeSpent += timeSpent || 0;
+
+                this.saveAnalyticsData();
+            }
+
+            trackSessionEnd() {
+                this.currentSession.timeSpent = Date.now() - this.currentSession.startTime;
+                
+                const sessionData = {
+                    ...this.currentSession,
+                    endTime: Date.now(),
+                    date: this.getTodayKey(),
+                    wordsStudied: Array.from(this.currentSession.wordsStudied),
+                    accuracy: this.currentSession.totalAttempts > 0 ? 
+                        (this.currentSession.correctAnswers / this.currentSession.totalAttempts) * 100 : 0
+                };
+
+                this.analyticsData.sessions.push(sessionData);
+                this.updateStreakData();
+                this.saveAnalyticsData();
+            }
+
+            calculateOverallStats() {
+                const allSessions = this.analyticsData.sessions;
+                const totalAttempts = allSessions.reduce((sum, session) => sum + session.totalAttempts, 0);
+                const totalCorrect = allSessions.reduce((sum, session) => sum + session.correctAnswers, 0);
+                const totalTime = allSessions.reduce((sum, session) => sum + session.timeSpent, 0);
+                
+                const uniqueWords = new Set();
+                allSessions.forEach(session => {
+                    session.wordsStudied.forEach(wordId => uniqueWords.add(wordId));
+                });
+
+                return {
+                    totalWordsStudied: uniqueWords.size,
+                    totalAttempts,
+                    totalCorrect,
+                    overallAccuracy: totalAttempts > 0 ? (totalCorrect / totalAttempts) * 100 : 0,
+                    totalStudyTime: totalTime / (1000 * 60 * 60),
+                    averageSessionTime: allSessions.length > 0 ? (totalTime / allSessions.length) / (1000 * 60) : 0,
+                    totalSessions: allSessions.length
+                };
+            }
+
+            calculateDifficultyBreakdown() {
+                const difficulties = { beginner: 0, intermediate: 0, advanced: 0 };
+                const difficultyTotals = { beginner: 0, intermediate: 0, advanced: 0 };
+
+                vocabulary.forEach(word => {
+                    if (word.difficulty) {
+                        difficultyTotals[word.difficulty]++;
+                    }
+                });
+
+                Object.values(this.analyticsData.wordAttempts).forEach(wordData => {
+                    if (wordData.srsStage === 'mastered' || wordData.srsStage === 'mature') {
+                        difficulties[wordData.difficulty]++;
+                    }
+                });
+
+                return {
+                    beginner: { learned: difficulties.beginner, total: difficultyTotals.beginner },
+                    intermediate: { learned: difficulties.intermediate, total: difficultyTotals.intermediate },
+                    advanced: { learned: difficulties.advanced, total: difficultyTotals.advanced }
+                };
+            }
+
+            calculateCategoryBreakdown() {
+                const categories = { business: 0, academic: 0, general: 0 };
+                const categoryTotals = { business: 0, academic: 0, general: 0 };
+
+                vocabulary.forEach(word => {
+                    if (word.category) {
+                        categoryTotals[word.category]++;
+                    }
+                });
+
+                Object.values(this.analyticsData.wordAttempts).forEach(wordData => {
+                    if (wordData.srsStage === 'mastered' || wordData.srsStage === 'mature') {
+                        categories[wordData.category]++;
+                    }
+                });
+
+                return {
+                    business: { learned: categories.business, total: categoryTotals.business },
+                    academic: { learned: categories.academic, total: categoryTotals.academic },
+                    general: { learned: categories.general, total: categoryTotals.general }
+                };
+            }
+
+            calculateStreakData() {
+                const today = new Date();
+                let currentStreak = 0;
+                let bestStreak = 0;
+                let tempStreak = 0;
+
+                for (let i = 0; i < 365; i++) {
+                    const date = new Date(today);
+                    date.setDate(date.getDate() - i);
+                    const dateKey = this.formatDateKey(date);
+
+                    if (this.analyticsData.dailyProgress[dateKey] && 
+                        this.analyticsData.dailyProgress[dateKey].wordsStudied.size > 0) {
+                        if (i === 0 || currentStreak === i) {
+                            currentStreak = i + 1;
+                        }
+                        tempStreak++;
+                        bestStreak = Math.max(bestStreak, tempStreak);
+                    } else {
+                        tempStreak = 0;
+                    }
+                }
+
+                return { currentStreak, bestStreak };
+            }
+
+            generateInsights() {
+                const stats = this.calculateOverallStats();
+                const difficulty = this.calculateDifficultyBreakdown();
+                const streak = this.calculateStreakData();
+                const insights = [];
+
+                if (stats.overallAccuracy >= 85) {
+                    insights.push({
+                        type: 'success',
+                        icon: '🎉',
+                        title: 'Excellent Performance!',
+                        description: `Your ${Math.round(stats.overallAccuracy)}% accuracy shows strong mastery. Consider focusing on advanced-level words to challenge yourself further.`
+                    });
+                } else if (stats.overallAccuracy >= 70) {
+                    insights.push({
+                        type: 'tip',
+                        icon: '💡',
+                        title: 'Solid Progress',
+                        description: `Your accuracy is good at ${Math.round(stats.overallAccuracy)}%. Try reviewing challenging words more frequently to improve retention.`
+                    });
+                } else if (stats.totalAttempts > 0) {
+                    insights.push({
+                        type: 'warning',
+                        icon: '⚡',
+                        title: 'Focus on Fundamentals',
+                        description: `Consider spending more time on beginner-level words to build a strong foundation before advancing.`
+                    });
+                }
+
+                if (streak.currentStreak >= 7) {
+                    insights.push({
+                        type: 'success',
+                        icon: '🔥',
+                        title: 'Amazing Streak!',
+                        description: `${streak.currentStreak} days in a row! Consistent daily practice is key to long-term retention.`
+                    });
+                } else if (streak.currentStreak === 0 && stats.totalSessions > 0) {
+                    insights.push({
+                        type: 'tip',
+                        icon: '📚',
+                        title: 'Restart Your Streak',
+                        description: 'Daily practice, even just 10 minutes, can significantly improve your vocabulary retention.'
+                    });
+                }
+
+                if (insights.length === 0) {
+                    insights.push({
+                        type: 'tip',
+                        icon: '🚀',
+                        title: 'Start Your Journey',
+                        description: 'Begin learning words to see personalized insights about your progress and performance!'
+                    });
+                }
+
+                return insights;
+            }
+
+            exportAnalyticsData() {
+                const exportData = {
+                    overview: this.calculateOverallStats(),
+                    difficulty: this.calculateDifficultyBreakdown(),
+                    categories: this.calculateCategoryBreakdown(),
+                    streak: this.calculateStreakData(),
+                    exportDate: new Date().toISOString(),
+                    totalWords: vocabulary.length
+                };
+
+                return exportData;
+            }
+
+            updateCategoryStats(category, isCorrect) {
+                if (!this.analyticsData.categoryStats[category]) {
+                    this.analyticsData.categoryStats[category] = { attempts: 0, correct: 0 };
+                }
+                
+                if (isCorrect !== null) {
+                    this.analyticsData.categoryStats[category].attempts++;
+                    if (isCorrect) this.analyticsData.categoryStats[category].correct++;
+                }
+            }
+
+            updateDifficultyStats(difficulty, isCorrect) {
+                if (!this.analyticsData.difficultyStats[difficulty]) {
+                    this.analyticsData.difficultyStats[difficulty] = { attempts: 0, correct: 0 };
+                }
+                
+                if (isCorrect !== null) {
+                    this.analyticsData.difficultyStats[difficulty].attempts++;
+                    if (isCorrect) this.analyticsData.difficultyStats[difficulty].correct++;
+                }
+            }
+
+            updateStreakData() {
+                const today = this.getTodayKey();
+                if (!this.analyticsData.streakData[today]) {
+                    this.analyticsData.streakData[today] = true;
+                }
+            }
+
+            getTodayKey() {
+                return this.formatDateKey(new Date());
+            }
+
+            formatDateKey(date) {
+                return date.toISOString().split('T')[0];
+            }
+
+            getEmptyDayData() {
+                return {
+                    wordsStudied: new Set(),
+                    quizzesTaken: 0,
+                    totalAttempts: 0,
+                    correctAnswers: 0,
+                    timeSpent: 0,
+                    newWords: new Set(),
+                    reviewedWords: new Set()
+                };
+            }
+
+            saveAnalyticsData() {
+                try {
+                    const dataToSave = {
+                        ...this.analyticsData,
+                        dailyProgress: Object.fromEntries(
+                            Object.entries(this.analyticsData.dailyProgress).map(([date, data]) => [
+                                date,
+                                {
+                                    ...data,
+                                    wordsStudied: Array.from(data.wordsStudied),
+                                    newWords: Array.from(data.newWords),
+                                    reviewedWords: Array.from(data.reviewedWords)
+                                }
+                            ])
+                        )
+                    };
+                    
+                    localStorage.setItem('vocabgenius_analytics', JSON.stringify(dataToSave));
+                } catch (error) {
+                    console.error('Error saving analytics data:', error);
+                }
+            }
+
+            loadAnalyticsData() {
+                try {
+                    const saved = localStorage.getItem('vocabgenius_analytics');
+                    if (saved) {
+                        const parsedData = JSON.parse(saved);
+                        
+                        if (parsedData.dailyProgress) {
+                            parsedData.dailyProgress = Object.fromEntries(
+                                Object.entries(parsedData.dailyProgress).map(([date, data]) => [
+                                    date,
+                                    {
+                                        ...data,
+                                        wordsStudied: new Set(data.wordsStudied || []),
+                                        newWords: new Set(data.newWords || []),
+                                        reviewedWords: new Set(data.reviewedWords || [])
+                                    }
+                                ])
+                            );
+                        }
+                        
+                        this.analyticsData = { ...this.analyticsData, ...parsedData };
+                    }
+                } catch (error) {
+                    console.error('Error loading analytics data:', error);
+                }
+            }
+
+            integrateWithMainApp() {
+                // Track session end on page unload
+                window.addEventListener('beforeunload', () => {
+                    this.trackSessionEnd();
+                });
+
+                // Auto-save analytics every 30 seconds
+                setInterval(() => {
+                    this.saveAnalyticsData();
+                }, 30000);
+            }
+        }
+
+        // Create global analytics instance
+        window.vocabAnalytics = new VocabGeniusAnalytics();
+    </script>
+    
     <script src="app.js"></script>
 </body>
 </html>
