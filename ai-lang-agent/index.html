@@ -100,6 +100,28 @@
                 <button class="btn-secondary" onclick="showHint()">💡 Hint</button>
                 <button class="btn-primary" onclick="testWord()">✅ I Know This</button>
                 <button class="btn-secondary" onclick="nextWord()">➡️ Next Word</button>
+                <button class="btn-quiz" onclick="startQuiz()">🎯 Take Quiz</button>
+            </div>
+        </div>
+        
+        <!-- Quiz Section -->
+        <div id="quiz" style="display:none;">
+            <div class="quiz-header">
+                <h2>🎯 Vocabulary Quiz</h2>
+                <div class="quiz-stats">
+                    <div class="stat">
+                        <div class="stat-number" id="quizAccuracy">0%</div>
+                        <div>Quiz Accuracy</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number" id="quizStreak">0</div>
+                        <div>Current Streak</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="quizContainer" class="quiz-container">
+                <!-- Quiz content will be dynamically generated here -->
             </div>
         </div>
         
@@ -142,3 +164,4 @@
     <script src="vocabulary-data.js"></script>
     <script src="app.js"></script>
 </body>
+</html>
