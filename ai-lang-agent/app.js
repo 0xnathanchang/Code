@@ -1,9 +1,18 @@
-// Global Variables
+// Update Quiz Stats (separate from learning stats)
+function updateQuizStats() {
+    const quizAccuracy = quizTotalAttempts > 0 ? Math.round((quizCorrectAnswers / quizTotalAttempts) * 100) : 0;
+    
+    // Update quiz display stats
+    document.getElementById('quizAccuracy').textContent = quizAccuracy + '%';
+    document.getElementById('quizStreak').textContent = streak;
+}// Global Variables
 let selectedMode = '';
 let currentWord = 0;
 let wordsLearned = 0;
 let correctAnswers = 0;
 let totalAttempts = 0;
+let quizCorrectAnswers = 0;
+let quizTotalAttempts = 0;
 let streak = 0;
 let apiKeys = {};
 let completedWords = new Set();
@@ -11,8 +20,8 @@ let quizMode = false;
 let currentQuiz = null;
 let quizStats = {
     multipleChoice: { correct: 0, total: 0 },
-    fillInBlank: { correct: 0, total: 0 },
-    matching: { correct: 0, total: 0 }
+    wordMatching: { correct: 0, total: 0 },
+    synonym: { correct: 0, total: 0 }
 };
 
 // Free Visual Representations (Emoji-based)
@@ -124,16 +133,43 @@ function generateMultipleChoiceQuiz(wordIndex) {
     };
 }
 
-function generateFillInBlankQuiz(wordIndex) {
+function generateWordMatchingQuiz(wordIndex) {
     const targetWord = vocabulary[wordIndex];
-    const sentence = targetWord.example;
-    const blankSentence = sentence.replace(new RegExp(targetWord.word, 'gi'), '_____');
+    const otherWords = vocabulary.filter((_, i) => i !== wordIndex);
+    
+    // Create word-definition pairs
+    const pairs = [targetWord, ...otherWords.sort(() => 0.5 - Math.random()).slice(0, 3)];
+    const shuffledDefinitions = pairs.map(w => w.definition).sort(() => 0.5 - Math.random());
     
     return {
-        type: 'fillInBlank',
-        question: `Fill in the blank: ${blankSentence}`,
-        correctAnswer: targetWord.word.toLowerCase(),
-        explanation: `The answer is "${targetWord.word}" which means ${targetWord.definition}.`,
+        type: 'wordMatching',
+        question: `Match "${targetWord.word}" with its correct definition:`,
+        targetWord: targetWord.word,
+        definitions: shuffledDefinitions,
+        correctAnswer: targetWord.definition,
+        explanation: `"${targetWord.word}" means ${targetWord.definition}. Example: ${targetWord.example}`,
+        targetWordObj: targetWord
+    };
+}
+
+function generateSynonymQuiz(wordIndex) {
+    const targetWord = vocabulary[wordIndex];
+    const synonyms = targetWord.synonyms.split(', ');
+    const mainSynonym = synonyms[0];
+    
+    // Get other words as distractors
+    const otherWords = vocabulary.filter((_, i) => i !== wordIndex);
+    const distractors = otherWords.sort(() => 0.5 - Math.random()).slice(0, 3);
+    
+    const allChoices = [mainSynonym, ...distractors.map(w => w.synonyms.split(', ')[0])];
+    const shuffledChoices = allChoices.sort(() => 0.5 - Math.random());
+    
+    return {
+        type: 'synonym',
+        question: `Which word is the best synonym for "${targetWord.word}"?`,
+        answers: shuffledChoices,
+        correctAnswer: mainSynonym,
+        explanation: `"${targetWord.word}" means ${targetWord.definition}. "${mainSynonym}" is a synonym. Example: ${targetWord.example}`,
         targetWord: targetWord
     };
 }
@@ -188,12 +224,13 @@ function startQuiz() {
     quizMode = true;
     document.getElementById('learning').style.display = 'none';
     document.getElementById('quiz').style.display = 'block';
+    updateQuizStats(); // Initialize quiz stats display
     generateNewQuiz();
 }
 
 // Generate New Quiz
 function generateNewQuiz() {
-    const quizTypes = ['multipleChoice', 'fillInBlank'];
+    const quizTypes = ['multipleChoice', 'wordMatching', 'synonym'];
     const randomType = quizTypes[Math.floor(Math.random() * quizTypes.length)];
     
     switch(randomType) {
@@ -201,9 +238,13 @@ function generateNewQuiz() {
             currentQuiz = generateMultipleChoiceQuiz(Math.floor(Math.random() * vocabulary.length));
             displayMultipleChoiceQuiz();
             break;
-        case 'fillInBlank':
-            currentQuiz = generateFillInBlankQuiz(Math.floor(Math.random() * vocabulary.length));
-            displayFillInBlankQuiz();
+        case 'wordMatching':
+            currentQuiz = generateWordMatchingQuiz(Math.floor(Math.random() * vocabulary.length));
+            displayWordMatchingQuiz();
+            break;
+        case 'synonym':
+            currentQuiz = generateSynonymQuiz(Math.floor(Math.random() * vocabulary.length));
+            displaySynonymQuiz();
             break;
     }
 }
@@ -227,35 +268,59 @@ function displayMultipleChoiceQuiz() {
             <button class="btn-primary" onclick="generateNewQuiz()">Next Question</button>
             <button class="btn-secondary" onclick="exitQuiz()">Exit Quiz</button>
         </div>
+        <div class="quiz-back-controls">
+            <button class="btn-secondary" onclick="exitQuiz()">← Back to Learning</button>
+        </div>
     `;
 }
 
-function displayFillInBlankQuiz() {
+function displayWordMatchingQuiz() {
     const quizContainer = document.getElementById('quizContainer');
     quizContainer.innerHTML = `
         <div class="quiz-question">
             <h3>${currentQuiz.question}</h3>
         </div>
-        <div class="quiz-input">
-            <input type="text" id="fillInAnswer" placeholder="Type your answer here..." class="quiz-text-input">
-            <button class="btn-primary" onclick="checkFillInAnswer()">Submit Answer</button>
+        <div class="quiz-answers">
+            ${currentQuiz.definitions.map((definition, index) => `
+                <button class="quiz-answer-btn" onclick="selectAnswer('${definition}', this)">
+                    ${String.fromCharCode(65 + index)}. ${definition}
+                </button>
+            `).join('')}
         </div>
         <div id="quizFeedback" class="quiz-feedback" style="display:none;"></div>
         <div class="quiz-controls" id="quizControls" style="display:none;">
             <button class="btn-primary" onclick="generateNewQuiz()">Next Question</button>
             <button class="btn-secondary" onclick="exitQuiz()">Exit Quiz</button>
         </div>
+        <div class="quiz-back-controls">
+            <button class="btn-secondary" onclick="exitQuiz()">← Back to Learning</button>
+        </div>
     `;
-    
-    // Focus on input
-    setTimeout(() => document.getElementById('fillInAnswer').focus(), 100);
-    
-    // Allow Enter key to submit
-    document.getElementById('fillInAnswer').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            checkFillInAnswer();
-        }
-    });
+}
+
+function displaySynonymQuiz() {
+    const quizContainer = document.getElementById('quizContainer');
+    quizContainer.innerHTML = `
+        <div class="quiz-question">
+            <h3>${currentQuiz.question}</h3>
+            <div class="quiz-hint">Choose the word that means the same thing.</div>
+        </div>
+        <div class="quiz-answers">
+            ${currentQuiz.answers.map((answer, index) => `
+                <button class="quiz-answer-btn" onclick="selectAnswer('${answer}', this)">
+                    ${String.fromCharCode(65 + index)}. ${answer}
+                </button>
+            `).join('')}
+        </div>
+        <div id="quizFeedback" class="quiz-feedback" style="display:none;"></div>
+        <div class="quiz-controls" id="quizControls" style="display:none;">
+            <button class="btn-primary" onclick="generateNewQuiz()">Next Question</button>
+            <button class="btn-secondary" onclick="exitQuiz()">Exit Quiz</button>
+        </div>
+        <div class="quiz-back-controls">
+            <button class="btn-secondary" onclick="exitQuiz()">← Back to Learning</button>
+        </div>
+    `;
 }
 
 // Quiz Answer Functions
@@ -263,15 +328,31 @@ function selectAnswer(selectedAnswer, buttonElement) {
     const isCorrect = selectedAnswer === currentQuiz.correctAnswer;
     const feedbackDiv = document.getElementById('quizFeedback');
     
-    // Update quiz stats
-    quizStats.multipleChoice.total++;
+    // Update overall quiz tracking
+    quizTotalAttempts++;
     if (isCorrect) {
-        quizStats.multipleChoice.correct++;
-        correctAnswers++;
+        quizCorrectAnswers++;
         streak++;
     } else {
         streak = 0;
     }
+    
+    // Update quiz stats based on quiz type
+    if (currentQuiz.type === 'multipleChoice') {
+        quizStats.multipleChoice.total++;
+        if (isCorrect) quizStats.multipleChoice.correct++;
+    } else if (currentQuiz.type === 'wordMatching') {
+        quizStats.wordMatching = quizStats.wordMatching || { correct: 0, total: 0 };
+        quizStats.wordMatching.total++;
+        if (isCorrect) quizStats.wordMatching.correct++;
+    } else if (currentQuiz.type === 'synonym') {
+        quizStats.synonym = quizStats.synonym || { correct: 0, total: 0 };
+        quizStats.synonym.total++;
+        if (isCorrect) quizStats.synonym.correct++;
+    }
+    
+    // Update overall stats (for learning mode tracking)
+    correctAnswers++;
     totalAttempts++;
     
     // Disable all answer buttons
@@ -287,47 +368,17 @@ function selectAnswer(selectedAnswer, buttonElement) {
     // Show feedback
     feedbackDiv.innerHTML = `
         <div class="${isCorrect ? 'correct' : 'incorrect'}">
-            ${isCorrect ? '✅ Correct!' : '❌ Incorrect'}
+            ${isCorrect ? '✅ Excellent!' : '❌ Not quite right'}
         </div>
         <div class="explanation">${currentQuiz.explanation}</div>
     `;
     feedbackDiv.style.display = 'block';
     document.getElementById('quizControls').style.display = 'block';
     
-    updateStats();
+    updateQuizStats();
 }
 
-function checkFillInAnswer() {
-    const userAnswer = document.getElementById('fillInAnswer').value.toLowerCase().trim();
-    const isCorrect = userAnswer === currentQuiz.correctAnswer;
-    const feedbackDiv = document.getElementById('quizFeedback');
-    
-    // Update quiz stats
-    quizStats.fillInBlank.total++;
-    if (isCorrect) {
-        quizStats.fillInBlank.correct++;
-        correctAnswers++;
-        streak++;
-    } else {
-        streak = 0;
-    }
-    totalAttempts++;
-    
-    // Disable input
-    document.getElementById('fillInAnswer').disabled = true;
-    
-    // Show feedback
-    feedbackDiv.innerHTML = `
-        <div class="${isCorrect ? 'correct' : 'incorrect'}">
-            ${isCorrect ? '✅ Correct!' : `❌ Incorrect. The answer is "${currentQuiz.targetWord.word}"`}
-        </div>
-        <div class="explanation">${currentQuiz.explanation}</div>
-    `;
-    feedbackDiv.style.display = 'block';
-    document.getElementById('quizControls').style.display = 'block';
-    
-    updateStats();
-}
+// Remove the old checkFillInAnswer function since we're not using it anymore
 
 function exitQuiz() {
     quizMode = false;
@@ -584,6 +635,8 @@ function restartLearning() {
     wordsLearned = 0;
     correctAnswers = 0;
     totalAttempts = 0;
+    quizCorrectAnswers = 0;
+    quizTotalAttempts = 0;
     streak = 0;
     completedWords.clear();
     quizMode = false;
@@ -591,8 +644,8 @@ function restartLearning() {
     // Reset quiz stats
     quizStats = {
         multipleChoice: { correct: 0, total: 0 },
-        fillInBlank: { correct: 0, total: 0 },
-        matching: { correct: 0, total: 0 }
+        wordMatching: { correct: 0, total: 0 },
+        synonym: { correct: 0, total: 0 }
     };
     
     // Show setup screen again
