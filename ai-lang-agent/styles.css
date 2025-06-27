@@ -1,4 +1,4 @@
-/* Apple.com Inspired Design System */
+/* Apple.com Inspired Design System - FIXED */
 @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700;800;900&family=SF+Pro+Text:wght@300;400;500;600;700&display=swap');
 
 /* CSS Variables - Apple Design System */
@@ -181,9 +181,30 @@ h4 {
     z-index: 1;
 }
 
+/* Header Section */
+.header-section {
+    padding: var(--space-16) var(--space-12) var(--space-8);
+    text-align: center;
+    border-bottom: 1px solid var(--separator);
+    background: linear-gradient(135deg, var(--gray-1) 0%, rgba(255,255,255,0.8) 100%);
+}
+
+.header-section h1 {
+    margin-bottom: var(--space-4);
+}
+
+.subtitle {
+    font-size: var(--text-lg);
+    color: var(--text-secondary);
+    font-weight: 400;
+    line-height: 1.47059;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
 /* Setup Section */
 .setup-section {
-    padding: var(--space-16) var(--space-12) var(--space-12);
+    padding: var(--space-12) var(--space-8);
     text-align: center;
 }
 
@@ -236,24 +257,37 @@ h4 {
     box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1);
 }
 
-/* Memory Mode Cards */
+.setup-section h3 {
+    margin-bottom: var(--space-8);
+    color: var(--text-primary);
+}
+
+/* Memory Mode Cards - 4 in a row */
 .memory-modes {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(4, 1fr);
     gap: var(--space-6);
-    margin: var(--space-10) 0;
+    margin: var(--space-8) 0;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .mode-card {
     background: var(--surface);
     border: 1px solid var(--separator);
     border-radius: var(--radius-2xl);
-    padding: var(--space-10) var(--space-8);
+    padding: var(--space-8);
     text-align: center;
     cursor: pointer;
     transition: var(--transition);
     position: relative;
     backdrop-filter: blur(20px);
+    min-height: 140px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 .mode-card:hover {
@@ -286,6 +320,11 @@ h4 {
     color: var(--text-primary);
     font-size: var(--text-lg);
     letter-spacing: 0.011em;
+}
+
+/* Learning Section */
+#learning {
+    padding: var(--space-8);
 }
 
 /* Stats Section */
@@ -367,7 +406,7 @@ h4 {
     border: 1px solid var(--separator);
     border-radius: var(--radius-3xl);
     padding: var(--space-12);
-    margin: var(--space-8);
+    margin: var(--space-8) 0;
     transition: var(--transition);
     display: none;
 }
@@ -474,8 +513,12 @@ h4 {
     animation: spin 1s linear infinite;
 }
 
-/* Button System */
+/* Button System - APPLE STYLE FIXED */
 button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
     padding: var(--space-4) var(--space-8);
     border: none;
     border-radius: var(--radius-md);
@@ -487,6 +530,9 @@ button {
     position: relative;
     min-height: 44px;
     letter-spacing: -0.022em;
+    text-decoration: none;
+    white-space: nowrap;
+    outline: none;
 }
 
 .btn-primary {
@@ -543,11 +589,17 @@ button {
 }
 
 /* Quiz Styles */
+#quiz {
+    padding: var(--space-8);
+}
+
 .quiz-header {
     text-align: center;
     padding: var(--space-12) var(--space-8) var(--space-8);
     background: var(--gray-1);
     border-bottom: 1px solid var(--separator);
+    margin: calc(-1 * var(--space-8)) calc(-1 * var(--space-8)) var(--space-8);
+    border-radius: var(--radius-3xl) var(--radius-3xl) 0 0;
 }
 
 .quiz-stats {
@@ -558,7 +610,7 @@ button {
 }
 
 .quiz-container {
-    padding: var(--space-10);
+    padding: 0;
 }
 
 .quiz-question {
@@ -679,6 +731,7 @@ button {
     gap: var(--space-5);
     justify-content: center;
     margin-top: var(--space-8);
+    flex-wrap: wrap;
 }
 
 .quiz-back-controls {
@@ -687,6 +740,12 @@ button {
     margin-bottom: var(--space-8);
     padding-bottom: var(--space-6);
     border-bottom: 1px solid var(--separator);
+}
+
+/* Completion Screen */
+#completion {
+    padding: var(--space-16) var(--space-8);
+    text-align: center;
 }
 
 /* Links */
@@ -757,7 +816,7 @@ small {
     100% { transform: translateX(100%); }
 }
 
-/* Responsive Design */
+/* Update responsive design for 4-column layout */
 @media (max-width: 834px) {
     body {
         padding: var(--space-4);
@@ -775,8 +834,8 @@ small {
         font-size: var(--text-5xl);
     }
     
-    .setup-section {
-        padding: var(--space-12) var(--space-8) var(--space-8);
+    .setup-section, #learning, #quiz {
+        padding: var(--space-8);
     }
     
     .controls {
@@ -803,6 +862,26 @@ small {
     .stats {
         grid-template-columns: repeat(2, 1fr);
         gap: var(--space-5);
+    }
+    
+    .quiz-controls {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .quiz-controls button {
+        width: 100%;
+        max-width: 280px;
+    }
+    
+    .start-section {
+        flex-direction: column;
+        gap: var(--space-3);
+    }
+    
+    .start-section button {
+        width: 100%;
+        max-width: 280px;
     }
 }
 
@@ -837,9 +916,7 @@ small {
         font-size: var(--text-base);
     }
     
-    .word-card,
-    .quiz-container {
+    .word-card {
         padding: var(--space-8);
-        margin: var(--space-6);
     }
 }

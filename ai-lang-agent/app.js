@@ -192,6 +192,36 @@ function generateMatchingQuiz() {
     };
 }
 
+// API Settings Modal Functions
+function showApiSettings() {
+    document.getElementById('apiModal').style.display = 'flex';
+}
+
+function hideApiSettings() {
+    document.getElementById('apiModal').style.display = 'none';
+}
+
+function saveApiSettings() {
+    // Store API keys
+    apiKeys.openai = document.getElementById('openaiKey').value;
+    apiKeys.stability = document.getElementById('stabilityKey').value;
+    
+    hideApiSettings();
+    
+    // Show confirmation if keys were added
+    if (apiKeys.openai || apiKeys.stability) {
+        alert('AI settings saved! You now have access to premium features.');
+    }
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+    const modal = document.getElementById('apiModal');
+    if (event.target === modal) {
+        hideApiSettings();
+    }
+}
+
 // Memory Mode Selection
 function selectMode(mode) {
     selectedMode = mode;
@@ -208,10 +238,7 @@ function startLearning() {
         return;
     }
     
-    // Store API keys (optional - app works without them)
-    apiKeys.openai = document.getElementById('openaiKey').value;
-    apiKeys.stability = document.getElementById('stabilityKey').value;
-    
+    // API keys are already stored from modal or can be empty
     document.getElementById('setup').style.display = 'none';
     document.getElementById('learning').style.display = 'block';
     

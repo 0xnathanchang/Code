@@ -8,38 +8,38 @@
 </head>
 <body>
     <div class="container">
-        <h1>🧠 VocabGenius AI</h1>
+        <!-- Header Section -->
+        <div class="header-section">
+            <h1>VocabGenius</h1>
+            <p class="subtitle">Master GMAT vocabulary with AI-powered personalized learning</p>
+        </div>
         
         <!-- Setup Section -->
         <div class="setup-section" id="setup">
-            <div class="api-setup">
-                <h4>🔑 API Configuration (Optional - for full functionality)</h4>
-                <p>To enable real AI features, add your API keys below. Don't worry - they're stored locally and never sent anywhere except the official APIs.</p>
-                <input type="password" id="openaiKey" class="api-input" placeholder="OpenAI API Key (for text generation)">
-                <input type="password" id="stabilityKey" class="api-input" placeholder="Stability AI API Key (for image generation)">
-                <small>💡 Get free credits: <a href="https://platform.openai.com" target="_blank">OpenAI</a> | <a href="https://platform.stability.ai" target="_blank">Stability AI</a></small>
-            </div>
-            
-            <h3>Choose Your Learning Style:</h3>
+            <h3>Choose Your Learning Style</h3>
             <div class="memory-modes">
                 <div class="mode-card" onclick="selectMode('image')">
                     <div>🖼️</div>
-                    <div>Image Memory</div>
+                    <div>Visual Learning</div>
                 </div>
                 <div class="mode-card" onclick="selectMode('text')">
                     <div>📝</div>
-                    <div>Text Memory</div>
+                    <div>Text Learning</div>
                 </div>
                 <div class="mode-card" onclick="selectMode('sound')">
                     <div>🔊</div>
-                    <div>Sound Memory</div>
+                    <div>Audio Learning</div>
                 </div>
                 <div class="mode-card" onclick="selectMode('scenario')">
                     <div>🎭</div>
-                    <div>Scenario Memory</div>
+                    <div>Scenario Learning</div>
                 </div>
             </div>
-            <button class="btn-primary" onclick="startLearning()">Start Learning!</button>
+            
+            <div class="start-section">
+                <button class="btn-primary" onclick="startLearning()">Start Learning</button>
+                <button class="btn-secondary api-settings-btn" onclick="showApiSettings()">⚙️ AI Settings</button>
+            </div>
         </div>
         
         <!-- Learning Section -->
@@ -155,6 +155,36 @@
                 <div class="controls">
                     <button class="btn-primary" onclick="restartLearning()">🔄 Start Over</button>
                     <button class="btn-secondary" onclick="reviewMissed()">📚 Review Difficult Words</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- API Settings Modal -->
+        <div id="apiModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>AI Settings</h3>
+                    <button class="modal-close" onclick="hideApiSettings()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p>Add your API keys to unlock premium AI features like real image generation and enhanced content.</p>
+                    <div class="api-input-group">
+                        <label for="openaiKey">OpenAI API Key</label>
+                        <input type="password" id="openaiKey" class="api-input" placeholder="sk-proj-...">
+                        <small>For advanced text generation and scenarios</small>
+                    </div>
+                    <div class="api-input-group">
+                        <label for="stabilityKey">Stability AI API Key</label>
+                        <input type="password" id="stabilityKey" class="api-input" placeholder="sk-...">
+                        <small>For AI-generated vocabulary images</small>
+                    </div>
+                    <div class="api-links">
+                        <small>Get free credits: <a href="https://platform.openai.com" target="_blank">OpenAI</a> | <a href="https://platform.stability.ai" target="_blank">Stability AI</a></small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-secondary" onclick="hideApiSettings()">Skip for Now</button>
+                    <button class="btn-primary" onclick="saveApiSettings()">Save Settings</button>
                 </div>
             </div>
         </div>
