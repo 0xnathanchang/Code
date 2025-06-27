@@ -5,5 +5,6 @@ A bunch of random experiments & interesting projects to test vibe coding, cursor
 - HTML, CSS
 - JavaScript
 - Rust
+- Python
 - Solidity
 - VS Code
