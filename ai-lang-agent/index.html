@@ -17,6 +17,7 @@
         <!-- Setup Section -->
         <div class="setup-section" id="setup">
             <h3>Choose Your Learning Style</h3>
+            
             <div class="memory-modes">
                 <div class="mode-card" onclick="selectMode('image')">
                     <div>🖼️</div>
@@ -164,27 +165,30 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h3>AI Settings</h3>
-                    <button class="modal-close" onclick="hideApiSettings()">&times;</button>
+                    <button class="modal-close" onclick="hideApiSettings()">×</button>
                 </div>
                 <div class="modal-body">
-                    <p>Add your API keys to unlock premium AI features like real image generation and enhanced content.</p>
+                    <p>Add your API keys to unlock premium AI features. Keys are stored locally.</p>
+                    
                     <div class="api-input-group">
-                        <label for="openaiKey">OpenAI API Key</label>
+                        <label>OpenAI API Key</label>
                         <input type="password" id="openaiKey" class="api-input" placeholder="sk-proj-...">
-                        <small>For advanced text generation and scenarios</small>
+                        <small>For enhanced text generation</small>
                     </div>
+                    
                     <div class="api-input-group">
-                        <label for="stabilityKey">Stability AI API Key</label>
+                        <label>Stability AI API Key</label>
                         <input type="password" id="stabilityKey" class="api-input" placeholder="sk-...">
-                        <small>For AI-generated vocabulary images</small>
+                        <small>For AI-generated images</small>
                     </div>
+                    
                     <div class="api-links">
                         <small>Get free credits: <a href="https://platform.openai.com" target="_blank">OpenAI</a> | <a href="https://platform.stability.ai" target="_blank">Stability AI</a></small>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn-secondary" onclick="hideApiSettings()">Skip for Now</button>
-                    <button class="btn-primary" onclick="saveApiSettings()">Save Settings</button>
+                    <button class="btn-secondary" onclick="hideApiSettings()">Skip</button>
+                    <button class="btn-primary" onclick="saveApiSettings()">Save</button>
                 </div>
             </div>
         </div>

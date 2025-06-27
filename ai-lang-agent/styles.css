@@ -283,7 +283,7 @@ h4 {
     transition: var(--transition);
     position: relative;
     backdrop-filter: blur(20px);
-    min-height: 140px;
+    min-height: 180px;
     display: flex;
     flex-direction: column;
     justify-content: center;
