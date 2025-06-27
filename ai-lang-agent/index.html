@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VocabGenius AI - GMAT Vocabulary Learning</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>🧠 VocabGenius AI</h1>
+        
+        <!-- Setup Section -->
+        <div class="setup-section" id="setup">
+            <div class="api-setup">
+                <h4>🔑 API Configuration (Optional - for full functionality)</h4>
+                <p>To enable real AI features, add your API keys below. Don't worry - they're stored locally and never sent anywhere except the official APIs.</p>
+                <input type="password" id="openaiKey" class="api-input" placeholder="OpenAI API Key (for text generation)">
+                <input type="password" id="stabilityKey" class="api-input" placeholder="Stability AI API Key (for image generation)">
+                <small>💡 Get free credits: <a href="https://platform.openai.com" target="_blank">OpenAI</a> | <a href="https://platform.stability.ai" target="_blank">Stability AI</a></small>
+            </div>
+            
+            <h3>Choose Your Learning Style:</h3>
+            <div class="memory-modes">
+                <div class="mode-card" onclick="selectMode('image')">
+                    <div>🖼️</div>
+                    <div>Image Memory</div>
+                </div>
+                <div class="mode-card" onclick="selectMode('text')">
+                    <div>📝</div>
+                    <div>Text Memory</div>
+                </div>
+                <div class="mode-card" onclick="selectMode('sound')">
+                    <div>🔊</div>
+                    <div>Sound Memory</div>
+                </div>
+                <div class="mode-card" onclick="selectMode('scenario')">
+                    <div>🎭</div>
+                    <div>Scenario Memory</div>
+                </div>
+            </div>
+            <button class="btn-primary" onclick="startLearning()">Start Learning!</button>
+        </div>
+        
+        <!-- Learning Section -->
+        <div id="learning" style="display:none;">
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-number" id="wordsLearned">0</div>
+                    <div>Words Learned</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number" id="accuracy">0%</div>
+                    <div>Accuracy</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number" id="streak">0</div>
+                    <div>Streak</div>
+                </div>
+            </div>
+            
+            <div class="progress">
+                <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+            </div>
+            
+            <div class="word-card active" id="wordCard">
+                <div class="word-title" id="wordTitle">Loading...</div>
+                <div class="pronunciation" id="pronunciation"></div>
+                <div class="definition" id="definition"></div>
+                
+                <div id="imageContent" class="generated-image" style="display:none;">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <span>Generating image...</span>
+                    </div>
+                </div>
+                
+                <div id="textContent" style="display:none;">
+                    <div class="example">
+                        <strong>Example:</strong> <span id="exampleText"></span>
+                    </div>
+                    <div><strong>Synonyms:</strong> <span id="synonymsText"></span></div>
+                    <div><strong>Etymology:</strong> <span id="etymologyText"></span></div>
+                </div>
+                
+                <div id="soundContent" style="display:none;">
+                    <button class="btn-secondary" onclick="playPronunciation()">🔊 Play Pronunciation</button>
+                    <div style="margin-top: 10px;">
+                        <strong>Phonetic Breakdown:</strong> <span id="phoneticBreakdown"></span>
+                    </div>
+                </div>
+                
+                <div id="scenarioContent" class="scenario" style="display:none;">
+                    <strong>Scenario:</strong><br><span id="scenarioText"></span>
+                </div>
+            </div>
+            
+            <div class="controls">
+                <button class="btn-secondary" onclick="goBack()">← Back to Setup</button>
+                <button class="btn-secondary" onclick="showHint()">💡 Hint</button>
+                <button class="btn-primary" onclick="testWord()">✅ I Know This</button>
+                <button class="btn-secondary" onclick="nextWord()">➡️ Next Word</button>
+            </div>
+        </div>
+        
+        <!-- Completion Screen -->
+        <div id="completion" style="display:none;">
+            <div style="text-align: center; padding: 40px;">
+                <div style="font-size: 4em; margin-bottom: 20px;">🎉</div>
+                <h2 style="color: #667eea; margin-bottom: 20px;">Congratulations!</h2>
+                <h3>You've completed all 50 GMAT vocabulary words!</h3>
+                
+                <div class="stats" style="margin: 30px 0;">
+                    <div class="stat">
+                        <div class="stat-number" id="finalWordsLearned">0</div>
+                        <div>Words Mastered</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number" id="finalAccuracy">0%</div>
+                        <div>Final Accuracy</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number" id="finalStreak">0</div>
+                        <div>Best Streak</div>
+                    </div>
+                </div>
+                
+                <div style="background: #f0f8ff; padding: 20px; border-radius: 10px; margin: 20px 0;">
+                    <h4>🎯 Your GMAT Vocabulary Achievement</h4>
+                    <p>You've successfully learned essential GMAT words that frequently appear on the test. These words will boost your verbal reasoning score significantly!</p>
+                </div>
+                
+                <div class="controls">
+                    <button class="btn-primary" onclick="restartLearning()">🔄 Start Over</button>
+                    <button class="btn-secondary" onclick="reviewMissed()">📚 Review Difficult Words</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load JavaScript files -->
+    <script src="vocabulary-data.js"></script>
+    <script src="app.js"></script>
+</body>
