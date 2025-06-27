@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto Tracker with Detailed Views</title>
+    <link rel="stylesheet" href="style-detail.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+</head>
+<body>
+    <div class="app">
+        <!-- Main Dashboard View -->
+        <div id="dashboardView" class="view">
+            <div class="container">
+                <header class="header">
+                    <h1>🚀 Crypto Price Tracker</h1>
+                    <p class="subtitle">Real-time cryptocurrency prices & portfolio tracking</p>
+                    <div class="last-updated">
+                        Last updated: <span id="lastUpdated">Loading...</span>
+                    </div>
+                </header>
+
+                <!-- Portfolio Summary Section -->
+                <section id="portfolioSection" class="portfolio-section hidden">
+                    <h2>💰 My Portfolio</h2>
+                    <div class="portfolio-summary">
+                        <div class="portfolio-stat">
+                            <span class="stat-label">Total Value</span>
+                            <span id="totalValue" class="stat-value">$0.00</span>
+                        </div>
+                        <div class="portfolio-stat">
+                            <span class="stat-label">24h Change</span>
+                            <span id="totalChange" class="stat-value">$0.00 (0.00%)</span>
+                        </div>
+                        <div class="portfolio-stat">
+                            <span class="stat-label">Holdings</span>
+                            <span id="holdingsCount" class="stat-value">0 coins</span>
+                        </div>
+                    </div>
+                    
+                    <div id="portfolioGrid" class="portfolio-grid">
+                        <!-- Portfolio items will be added here -->
+                    </div>
+                    
+                    <button id="clearPortfolio" class="clear-portfolio-btn">🗑️ Clear Portfolio</button>
+                </section>
+
+                <div class="controls">
+                    <input type="text" id="searchInput" placeholder="Search cryptocurrencies..." class="search-box">
+                    <button id="refreshBtn" class="refresh-btn">🔄 Refresh</button>
+                </div>
+
+                <div id="loading" class="loading">
+                    <div class="spinner"></div>
+                    <p>Loading cryptocurrency data...</p>
+                </div>
+
+                <div id="error" class="error hidden">
+                    <p>❌ Failed to load data. Please try again.</p>
+                    <button onclick="loadCryptoData()" class="retry-btn">Retry</button>
+                </div>
+
+                <div class="crypto-grid" id="cryptoGrid">
+                    <!-- Crypto cards will be dynamically inserted here -->
+                </div>
+
+                <footer class="footer">
+                    <p>Data provided by <a href="https://coingecko.com" target="_blank">CoinGecko</a></p>
+                    <p>Updates every 90 seconds • Last refresh: <span id="footerTime">--</span></p>
+                </footer>
+            </div>
+        </div>
+
+        <!-- Coin Detail View -->
+        <div id="coinDetailView" class="view hidden">
+            <div class="container">
+                <!-- Navigation Header -->
+                <div class="detail-nav">
+                    <button id="backToMain" class="back-btn">← Back to Dashboard</button>
+                    <div class="detail-nav-info">
+                        <img id="detailCoinIcon" src="" alt="" class="detail-coin-icon">
+                        <div>
+                            <h2 id="detailCoinName">Loading...</h2>
+                            <span id="detailCoinSymbol" class="detail-coin-symbol">...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Price Header -->
+                <div class="price-header">
+                    <div class="price-main">
+                        <span id="detailCurrentPrice" class="current-price">$0.00</span>
+                        <span id="detailPriceChange" class="price-change">+0.00%</span>
+                    </div>
+                    <div class="price-actions">
+                        <button id="detailAddToPortfolio" class="portfolio-action-btn">+ Add to Portfolio</button>
+                    </div>
+                </div>
+
+                <!-- Chart Section -->
+                <div class="chart-section">
+                    <div class="chart-header">
+                        <h3>Price Chart</h3>
+                        <div class="chart-timeframes">
+                            <button class="timeframe-btn active" data-timeframe="7">7D</button>
+                            <button class="timeframe-btn" data-timeframe="30">30D</button>
+                            <button class="timeframe-btn" data-timeframe="90">90D</button>
+                            <button class="timeframe-btn" data-timeframe="365">1Y</button>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="priceChart"></canvas>
+                    </div>
+                    <div id="chartLoading" class="chart-loading hidden">
+                        <div class="chart-spinner"></div>
+                        <p>Loading chart data...</p>
+                    </div>
+                </div>
+
+                <!-- Statistics Grid -->
+                <div class="stats-grid">
+                    <div class="stat-group">
+                        <h3>Market Data</h3>
+                        <div class="stat-item">
+                            <span class="stat-label">Market Cap</span>
+                            <span id="detailMarketCap" class="stat-value">$0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Volume (24h)</span>
+                            <span id="detailVolume" class="stat-value">$0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Market Cap Rank</span>
+                            <span id="detailRank" class="stat-value">#0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Circulating Supply</span>
+                            <span id="detailCirculating" class="stat-value">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Total Supply</span>
+                            <span id="detailTotalSupply" class="stat-value">0</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-group">
+                        <h3>Price Statistics</h3>
+                        <div class="stat-item">
+                            <span class="stat-label">24h High</span>
+                            <span id="detailHigh24h" class="stat-value">$0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">24h Low</span>
+                            <span id="detailLow24h" class="stat-value">$0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">All-Time High</span>
+                            <span id="detailATH" class="stat-value">$0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">ATH Date</span>
+                            <span id="detailATHDate" class="stat-value">-</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">All-Time Low</span>
+                            <span id="detailATL" class="stat-value">$0</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-group">
+                        <h3>Price Changes</h3>
+                        <div class="stat-item">
+                            <span class="stat-label">1 Hour</span>
+                            <span id="detailChange1h" class="stat-value">0.00%</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">24 Hours</span>
+                            <span id="detailChange24h" class="stat-value">0.00%</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">7 Days</span>
+                            <span id="detailChange7d" class="stat-value">0.00%</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">14 Days</span>
+                            <span id="detailChange14d" class="stat-value">0.00%</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">30 Days</span>
+                            <span id="detailChange30d" class="stat-value">0.00%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- About Section -->
+                <div class="about-section">
+                    <h3>About <span id="aboutCoinName">Cryptocurrency</span></h3>
+                    <div id="coinDescription" class="coin-description">
+                        <div class="description-loading">
+                            <div class="description-spinner"></div>
+                            <p>Loading description...</p>
+                        </div>
+                    </div>
+                    
+                    <div class="coin-links">
+                        <h4>Official Links</h4>
+                        <div id="coinLinksContainer" class="links-container">
+                            <div class="links-loading">Loading links...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add to Portfolio Modal - FIXED -->
+    <div id="portfolioModal" class="modal hidden" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Add to Portfolio</h3>
+                <button class="modal-close" id="modalClose">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="crypto-modal-info">
+                    <img id="modalCryptoIcon" src="" alt="" class="modal-crypto-icon">
+                    <div>
+                        <div id="modalCryptoName" class="modal-crypto-name">Loading...</div>
+                        <div id="modalCryptoPrice" class="modal-crypto-price">$0.00</div>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label for="amountInput">Amount you own:</label>
+                    <input type="number" id="amountInput" placeholder="0.00" step="any" min="0">
+                    <span id="amountSymbol" class="amount-symbol">---</span>
+                </div>
+                
+                <div class="modal-calculation">
+                    <span>Total Value: </span>
+                    <span id="calculatedValue" class="calculated-value">$0.00</span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="cancelModal" class="cancel-btn">Cancel</button>
+                <button id="addToPortfolio" class="add-btn">Add to Portfolio</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Force hide modal immediately
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('portfolioModal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.style.display = 'none';
+            }
+        });
+    </script>
+    <script src="script-detail.js"></script>
+</body>
+</html>

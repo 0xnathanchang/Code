@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto Price Tracker with Portfolio</title>
+    <link rel="stylesheet" href="style-landing.css">
+</head>
+<body>
+    <div id="landingPage" class="landing-page">
+        <div class="landing-content">
+            <h1 class="landing-title">Unlock the World of Crypto.</h1>
+            <p class="landing-subtitle">Real-time data, powerful insights, and seamless portfolio tracking – all in one place.</p>
+            <div class="features-grid">
+                <div class="feature-item">
+                    <span class="feature-icon">📊</span>
+                    <h3>Live Price Data</h3>
+                    <p>Track hundreds of cryptocurrencies with real-time updates.</p>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">📈</span>
+                    <h3>Personal Portfolio</h3>
+                    <p>Manage your holdings and see your total crypto wealth evolve.</p>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">🔍</span>
+                    <h3>Explore & Discover</h3>
+                    <p>Powerful search and filters to find your next investment.</p>
+                </div>
+            </div>
+            <button id="getStartedBtn" class="get-started-btn">Get Started</button>
+        </div>
+    </div>
+
+    <div id="mainContent" class="container hidden">
+        <header class="header">
+            <h1>🚀 Crypto Pulse</h1>
+            <p class="subtitle">Real-time cryptocurrency prices & portfolio tracking</p>
+            <div class="last-updated">
+                Last updated: <span id="lastUpdated">Loading...</span>
+            </div>
+        </header>
+
+        <section id="portfolioSection" class="portfolio-section hidden">
+            <h2>💰 My Portfolio</h2>
+            <div class="portfolio-summary">
+                <div class="portfolio-stat">
+                    <span class="stat-label">Total Value</span>
+                    <span id="totalValue" class="stat-value">$0.00</span>
+                </div>
+                <div class="portfolio-stat">
+                    <span class="stat-label">24h Change</span>
+                    <span id="totalChange" class="stat-value">$0.00 (0.00%)</span>
+                </div>
+                <div class="portfolio-stat">
+                    <span class="stat-label">Holdings</span>
+                    <span id="holdingsCount" class="stat-value">0 coins</span>
+                </div>
+            </div>
+            
+            <div id="portfolioGrid" class="portfolio-grid">
+                </div>
+            
+            <button id="clearPortfolio" class="clear-portfolio-btn">🗑️ Clear Portfolio</button>
+        </section>
+
+        <div class="controls">
+            <input type="text" id="searchInput" placeholder="Search cryptocurrencies..." class="search-box">
+            <button id="refreshBtn" class="refresh-btn">🔄 Refresh</button>
+        </div>
+
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Loading cryptocurrency data...</p>
+        </div>
+
+        <div id="error" class="error hidden">
+            <p>❌ Failed to load data. Please try again.</p>
+            <button onclick="loadCryptoData()" class="retry-btn">Retry</button>
+        </div>
+
+        <div class="crypto-grid" id="cryptoGrid">
+            </div>
+
+        <footer class="footer">
+            <p>Data provided by <a href="https://coingecko.com" target="_blank">CoinGecko</a></p>
+            <p>Updates every 30 seconds • Last refresh: <span id="footerTime">--</span></p>
+        </footer>
+    </div>
+
+    <div id="portfolioModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Add to Portfolio</h3>
+                <button class="modal-close" id="modalClose">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="crypto-modal-info">
+                    <img id="modalCryptoIcon" src="" alt="" class="modal-crypto-icon">
+                    <div>
+                        <div id="modalCryptoName" class="modal-crypto-name"></div>
+                        <div id="modalCryptoPrice" class="modal-crypto-price"></div>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label for="amountInput">Amount you own:</label>
+                    <input type="number" id="amountInput" placeholder="0.00" step="any" min="0">
+                    <span id="amountSymbol" class="amount-symbol">BTC</span>
+                </div>
+                
+                <div class="modal-calculation">
+                    <span>Total Value: </span>
+                    <span id="calculatedValue" class="calculated-value">$0.00</span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="cancelModal" class="cancel-btn">Cancel</button>
+                <button id="addToPortfolio" class="add-btn">Add to Portfolio</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script-landing.js"></script>
+</body>
+</html>
