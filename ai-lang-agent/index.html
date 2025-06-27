@@ -153,11 +153,6 @@
             </div>
             
             <div class="srs-controls">
-                <div class="review-navigation">
-                    <button class="btn-secondary" onclick="previousReviewWord()" id="prevReviewBtn">← Previous</button>
-                    <button class="btn-secondary" onclick="exitReview()">← Back to Setup</button>
-                </div>
-                
                 <p class="srs-question">How well did you remember this word?</p>
                 <div class="srs-buttons">
                     <button class="btn-srs btn-again" onclick="rateDifficulty('again')">
@@ -177,6 +172,7 @@
                         <small>2+ weeks</small>
                     </button>
                 </div>
+                <button class="btn-secondary review-back" onclick="exitReview()">← Back to Setup</button>
             </div>
         </div>
         
